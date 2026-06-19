@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy portfolio to /var/www/portfolio on your VPS.
-# Run from the project root after cloning the repo on the server.
+# Deploy portfolio static export to the nginx web root.
+# Keep the git repo and served files in separate directories.
+#
+# VPS layout:
+#   /var/www/portfolio      -> git repo (clone from GitHub)
+#   /var/www/anikait.page   -> built static files (nginx serves this)
 #
 # Usage:
 #   chmod +x scripts/deploy.sh
 #   ./scripts/deploy.sh
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WEB_ROOT="/var/www/portfolio"
+WEB_ROOT="/var/www/anikait.page"
 
 echo "==> Building static site..."
 cd "$APP_DIR"
