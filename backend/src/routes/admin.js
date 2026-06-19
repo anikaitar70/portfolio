@@ -2,9 +2,10 @@ import fs from "fs";
 import path from "path";
 import { Router } from "express";
 import multer from "multer";
-import { getDashboardStats, getDbInfo } from "../db.js";
+import { getDashboardStats } from "../db.js";
 import { config, resumePath } from "../config.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { getSystemMetrics } from "../systemMetrics.js";
 
 const router = Router();
 
@@ -30,33 +31,9 @@ router.get("/dashboard", (_req, res) => {
   res.json(getDashboardStats());
 });
 
-router.get("/diagnostics", (_req, res) => {
-  const dbInfo = getDbInfo();
-  let resume = null;
-
-  try {
-    const stat = fs.statSync(resumePath);
-    resume = {
-      path: resumePath,
-      sizeBytes: stat.size,
-      updatedAt: stat.mtime.toISOString(),
-    };
-  } catch {
-    resume = { path: resumePath, exists: false };
-  }
-
-  res.json({
-    service: {
-      nodeVersion: process.version,
-      uptimeSeconds: Math.floor(process.uptime()),
-      memory: process.memoryUsage(),
-      env: config.nodeEnv,
-      webRoot: config.webRoot,
-      dataDir: config.dataDir,
-    },
-    database: dbInfo,
-    resume,
-  });
+router.get("/diagnostics", async (_req, res) => {
+  const metrics = await getSystemMetrics();
+  res.json(metrics);
 });
 
 router.post("/resume", upload.single("resume"), (req, res) => {

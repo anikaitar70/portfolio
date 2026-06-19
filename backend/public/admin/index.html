@@ -166,6 +166,86 @@
         align-items: center;
         gap: 1rem;
       }
+
+      .metric-card {
+        background: #0d0d14;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 0.35rem;
+      }
+
+      .metric-sub {
+        color: var(--muted);
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+      }
+
+      .bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 0.75rem;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1, #818cf8);
+        border-radius: 999px;
+      }
+
+      .bar.warn > span {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      }
+
+      .bar.danger > span {
+        background: linear-gradient(90deg, #ef4444, #f87171);
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        border: 1px solid var(--border);
+      }
+
+      .status-pill.active {
+        color: var(--success);
+        border-color: rgba(74, 222, 128, 0.25);
+        background: rgba(74, 222, 128, 0.08);
+      }
+
+      .status-pill.inactive {
+        color: var(--danger);
+        border-color: rgba(248, 113, 113, 0.25);
+        background: rgba(248, 113, 113, 0.08);
+      }
+
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
     </style>
   </head>
   <body>
@@ -225,8 +305,81 @@
         </div>
 
         <div class="panel">
-          <h2>Diagnostics</h2>
-          <pre id="diagnostics" class="mono">Loading…</pre>
+          <div class="section-title">
+            <h2>Server metrics</h2>
+            <button id="refresh-metrics" class="secondary" type="button">Refresh</button>
+          </div>
+          <p id="metrics-updated" class="label">Loading…</p>
+
+          <div class="grid grid-4" style="margin-top: 1rem">
+            <div class="metric-card">
+              <div class="label">CPU usage</div>
+              <div id="metric-cpu" class="metric-value">—</div>
+              <div id="metric-cpu-sub" class="metric-sub">—</div>
+              <div id="metric-cpu-bar" class="bar"><span style="width: 0%"></span></div>
+            </div>
+            <div class="metric-card">
+              <div class="label">RAM usage</div>
+              <div id="metric-ram" class="metric-value">—</div>
+              <div id="metric-ram-sub" class="metric-sub">—</div>
+              <div id="metric-ram-bar" class="bar"><span style="width: 0%"></span></div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Disk free (root)</div>
+              <div id="metric-disk" class="metric-value">—</div>
+              <div id="metric-ram-disk-sub" class="metric-sub">—</div>
+              <div id="metric-disk-bar" class="bar"><span style="width: 0%"></span></div>
+            </div>
+            <div class="metric-card">
+              <div class="label">System uptime</div>
+              <div id="metric-uptime" class="metric-value">—</div>
+              <div id="metric-host" class="metric-sub">—</div>
+            </div>
+          </div>
+
+          <div class="grid grid-2" style="margin-top: 1rem">
+            <div class="metric-card">
+              <div class="label">Load average</div>
+              <div id="metric-load" class="metric-value">—</div>
+              <div id="metric-load-sub" class="metric-sub">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Network (since boot)</div>
+              <div id="metric-network" class="metric-value">—</div>
+              <div id="metric-network-sub" class="metric-sub">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Swap</div>
+              <div id="metric-swap" class="metric-value">—</div>
+              <div id="metric-swap-sub" class="metric-sub">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="label">API process memory</div>
+              <div id="metric-process" class="metric-value">—</div>
+              <div id="metric-process-sub" class="metric-sub">—</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem">
+            <div class="label">Services</div>
+            <div id="metric-services" class="row" style="margin-top: 0.5rem"></div>
+          </div>
+
+          <div class="grid grid-2" style="margin-top: 1rem">
+            <div class="metric-card">
+              <div class="label">Site storage</div>
+              <div id="metric-web-disk" class="metric-sub">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Database & resume</div>
+              <div id="metric-app-files" class="metric-sub">—</div>
+            </div>
+          </div>
+
+          <details style="margin-top: 1rem">
+            <summary class="label" style="cursor: pointer">Raw JSON</summary>
+            <pre id="diagnostics" class="mono" style="margin-top: 0.75rem">Loading…</pre>
+          </details>
         </div>
 
         <div class="panel">
@@ -279,6 +432,129 @@
       const loginError = document.getElementById("login-error");
       const logoutBtn = document.getElementById("logout-btn");
       const resumeForm = document.getElementById("resume-form");
+      const refreshMetricsBtn = document.getElementById("refresh-metrics");
+      let metricsTimer = null;
+
+      function barClass(percent) {
+        if (percent >= 85) return "bar danger";
+        if (percent >= 70) return "bar warn";
+        return "bar";
+      }
+
+      function setBar(id, percent) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const safe = Math.max(0, Math.min(100, percent || 0));
+        el.className = barClass(safe);
+        el.innerHTML = `<span style="width: ${safe}%"></span>`;
+      }
+
+      function formatUptime(seconds) {
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        return `${minutes}m`;
+      }
+
+      function renderDiagnostics(metrics) {
+        document.getElementById("diagnostics").textContent = JSON.stringify(metrics, null, 2);
+        document.getElementById("metrics-updated").textContent =
+          `Last updated: ${new Date(metrics.collectedAt).toLocaleString()}`;
+
+        const cpu = metrics.cpu?.usagePercent ?? 0;
+        document.getElementById("metric-cpu").textContent =
+          metrics.cpu?.usagePercent != null ? `${cpu}%` : "N/A";
+        document.getElementById("metric-cpu-sub").textContent =
+          `${metrics.cpu?.cores || "?"} cores · ${metrics.cpu?.model || "CPU"}`;
+        setBar("metric-cpu-bar", cpu);
+
+        const ram = metrics.memory?.usedPercent ?? 0;
+        document.getElementById("metric-ram").textContent = `${ram}%`;
+        document.getElementById("metric-ram-sub").textContent =
+          `${metrics.memory?.usedGb || "?"} GB used / ${metrics.memory?.totalGb || "?"} GB total · ${metrics.memory?.availableGb || "?"} GB available`;
+        setBar("metric-ram-bar", ram);
+
+        const disk = metrics.disk?.root;
+        const diskFreePercent =
+          disk?.totalBytes > 0
+            ? Math.round((disk.freeBytes / disk.totalBytes) * 1000) / 10
+            : 0;
+        document.getElementById("metric-disk").textContent =
+          disk?.error ? "N/A" : `${diskFreePercent}% free`;
+        document.getElementById("metric-ram-disk-sub").textContent = disk?.error
+          ? disk.error
+          : `${disk.free} free of ${disk.total} (${disk.usedPercent}% used)`;
+        setBar("metric-disk-bar", disk?.usedPercent ?? 0);
+
+        document.getElementById("metric-uptime").textContent = formatUptime(
+          metrics.host?.uptimeSeconds || 0
+        );
+        document.getElementById("metric-host").textContent =
+          `${metrics.host?.hostname || "host"} · ${metrics.host?.platform || ""} ${metrics.host?.arch || ""}`;
+
+        const load = metrics.cpu?.load;
+        document.getElementById("metric-load").textContent = load
+          ? `${load.oneMinute} / ${load.fiveMinutes} / ${load.fifteenMinutes}`
+          : "—";
+        document.getElementById("metric-load-sub").textContent = load
+          ? `${load.oneMinutePercent}% of capacity (1 min) · ${load.cores} cores`
+          : "—";
+
+        const network = metrics.network;
+        document.getElementById("metric-network").textContent = network
+          ? `↓ ${network.received}`
+          : "N/A";
+        document.getElementById("metric-network-sub").textContent = network
+          ? `↑ ${network.transmitted} transmitted`
+          : "Linux only";
+
+        const swap = metrics.memory?.swap;
+        document.getElementById("metric-swap").textContent = swap
+          ? `${swap.usedPercent}%`
+          : "None";
+        document.getElementById("metric-swap-sub").textContent = swap?.totalBytes
+          ? `${formatBytes(swap.usedBytes)} used / ${formatBytes(swap.totalBytes)} total`
+          : "No swap configured";
+
+        const proc = metrics.process;
+        document.getElementById("metric-process").textContent =
+          proc?.memory?.rss || "—";
+        document.getElementById("metric-process-sub").textContent = proc
+          ? `PID ${proc.pid} · uptime ${formatUptime(proc.uptimeSeconds)} · heap ${proc.memory.heapUsed}`
+          : "—";
+
+        document.getElementById("metric-services").innerHTML = (metrics.services || [])
+          .map((service) => {
+            const active = service.status === "active";
+            return `<span class="status-pill ${active ? "active" : "inactive"}">${service.name}: ${service.status}</span>`;
+          })
+          .join("");
+
+        const webDisk = metrics.disk?.webRoot;
+        document.getElementById("metric-web-disk").textContent = webDisk?.error
+          ? webDisk.error
+          : `${webDisk?.path}\n${webDisk?.used} used · ${webDisk?.free} free · ${webDisk?.usedPercent}% used`;
+
+        const dbFile = metrics.application?.database?.file;
+        const resume = metrics.application?.resume;
+        document.getElementById("metric-app-files").textContent =
+          `DB: ${dbFile?.exists ? `${dbFile.size} · ${dbFile.path}` : "missing"}\n` +
+          `Resume: ${resume?.exists ? `${resume.size} · updated ${new Date(resume.updatedAt).toLocaleString()}` : "missing"}`;
+      }
+
+      function formatBytes(bytes) {
+        if (bytes == null) return "—";
+        const units = ["B", "KB", "MB", "GB", "TB"];
+        let value = bytes;
+        let unit = 0;
+        while (value >= 1024 && unit < units.length - 1) {
+          value /= 1024;
+          unit += 1;
+        }
+        return `${Math.round(value * 10) / 10} ${units[unit]}`;
+      }
 
       async function api(path, options = {}) {
         const response = await fetch(path, {
@@ -321,7 +597,7 @@
         document.getElementById("stat-today-visits").textContent = dashboard.today.pageviews || 0;
         document.getElementById("stat-sessions").textContent = dashboard.totals.unique_sessions || 0;
         document.getElementById("stat-errors").textContent = dashboard.totals.errors || 0;
-        document.getElementById("diagnostics").textContent = JSON.stringify(diagnostics, null, 2);
+        renderDiagnostics(diagnostics);
 
         document.getElementById("top-pages").innerHTML = dashboard.topPages
           .map((row) => `<tr><td>${row.path}</td><td>${row.views}</td></tr>`)
@@ -350,6 +626,7 @@
           if (session.authenticated) {
             showDashboard();
             await loadDashboard();
+            startMetricsAutoRefresh();
             return;
           }
         } catch {
@@ -369,6 +646,7 @@
           });
           showDashboard();
           await loadDashboard();
+          startMetricsAutoRefresh();
         } catch (error) {
           loginError.textContent = error.message;
           loginError.classList.remove("hidden");
@@ -404,6 +682,23 @@
           error.classList.remove("hidden");
         }
       });
+
+      refreshMetricsBtn.addEventListener("click", async () => {
+        const diagnostics = await api("/api/v1/admin/diagnostics");
+        renderDiagnostics(diagnostics);
+      });
+
+      function startMetricsAutoRefresh() {
+        if (metricsTimer) clearInterval(metricsTimer);
+        metricsTimer = setInterval(async () => {
+          try {
+            const diagnostics = await api("/api/v1/admin/diagnostics");
+            renderDiagnostics(diagnostics);
+          } catch {
+            // ignore background refresh errors
+          }
+        }, 30000);
+      }
 
       checkSession();
     </script>
