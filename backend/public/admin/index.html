@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Admin — anikait.page</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a0a0f;
+        --panel: #12121a;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f4f4f5;
+        --muted: #a1a1aa;
+        --accent: #818cf8;
+        --danger: #f87171;
+        --success: #4ade80;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+      }
+
+      h1,
+      h2 {
+        margin: 0 0 0.75rem;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem;
+        margin-top: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .stat {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .label {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      input,
+      button {
+        font: inherit;
+      }
+
+      input[type="password"],
+      input[type="file"] {
+        width: 100%;
+        padding: 0.75rem 0.9rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #0d0d14;
+        color: var(--text);
+      }
+
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      button.secondary {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.65rem 0.4rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .error {
+        color: var(--danger);
+        margin-top: 0.75rem;
+      }
+
+      .success {
+        color: var(--success);
+        margin-top: 0.75rem;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.82rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="login-view">
+        <h1>Portfolio Admin</h1>
+        <h2>Sign in to manage anikait.page</h2>
+        <div class="panel" style="max-width: 420px">
+          <form id="login-form">
+            <label class="label" for="password">Admin password</label>
+            <input id="password" type="password" autocomplete="current-password" required />
+            <div style="margin-top: 1rem">
+              <button type="submit">Sign in</button>
+            </div>
+            <p id="login-error" class="error hidden"></p>
+          </form>
+        </div>
+      </div>
+
+      <div id="dashboard-view" class="hidden">
+        <div class="topbar">
+          <div>
+            <h1>Portfolio Admin</h1>
+            <h2>Analytics, diagnostics, and resume</h2>
+          </div>
+          <button id="logout-btn" class="secondary" type="button">Sign out</button>
+        </div>
+
+        <div class="grid grid-3 panel">
+          <div>
+            <div class="label">Total visits</div>
+            <div id="stat-total-visits" class="stat">—</div>
+          </div>
+          <div>
+            <div class="label">Visits today</div>
+            <div id="stat-today-visits" class="stat">—</div>
+          </div>
+          <div>
+            <div class="label">Unique sessions</div>
+            <div id="stat-sessions" class="stat">—</div>
+          </div>
+          <div>
+            <div class="label">Total errors</div>
+            <div id="stat-errors" class="stat">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Upload resume PDF</h2>
+          <p class="label">Replaces the live file at /resume/Anikait_Resume.pdf</p>
+          <form id="resume-form" class="row" style="margin-top: 1rem">
+            <input id="resume-file" type="file" accept="application/pdf" required />
+            <button type="submit">Upload</button>
+          </form>
+          <p id="resume-status" class="success hidden"></p>
+          <p id="resume-error" class="error hidden"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Diagnostics</h2>
+          <pre id="diagnostics" class="mono">Loading…</pre>
+        </div>
+
+        <div class="panel">
+          <h2>Top pages</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Path</th>
+                <th>Views</th>
+              </tr>
+            </thead>
+            <tbody id="top-pages"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <h2>Recent visits</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Path</th>
+                <th>Referrer</th>
+              </tr>
+            </thead>
+            <tbody id="recent-visits"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <h2>Recent errors</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Path</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody id="recent-errors"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const loginView = document.getElementById("login-view");
+      const dashboardView = document.getElementById("dashboard-view");
+      const loginForm = document.getElementById("login-form");
+      const loginError = document.getElementById("login-error");
+      const logoutBtn = document.getElementById("logout-btn");
+      const resumeForm = document.getElementById("resume-form");
+
+      async function api(path, options = {}) {
+        const response = await fetch(path, {
+          credentials: "include",
+          ...options,
+          headers: {
+            ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
+            ...(options.headers || {}),
+          },
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+        return data;
+      }
+
+      function showLogin() {
+        loginView.classList.remove("hidden");
+        dashboardView.classList.add("hidden");
+      }
+
+      function showDashboard() {
+        loginView.classList.add("hidden");
+        dashboardView.classList.remove("hidden");
+      }
+
+      function formatTime(value) {
+        return new Date(value + "Z").toLocaleString();
+      }
+
+      async function loadDashboard() {
+        const [dashboard, diagnostics] = await Promise.all([
+          api("/api/v1/admin/dashboard"),
+          api("/api/v1/admin/diagnostics"),
+        ]);
+
+        document.getElementById("stat-total-visits").textContent = dashboard.totals.pageviews || 0;
+        document.getElementById("stat-today-visits").textContent = dashboard.today.pageviews || 0;
+        document.getElementById("stat-sessions").textContent = dashboard.totals.unique_sessions || 0;
+        document.getElementById("stat-errors").textContent = dashboard.totals.errors || 0;
+        document.getElementById("diagnostics").textContent = JSON.stringify(diagnostics, null, 2);
+
+        document.getElementById("top-pages").innerHTML = dashboard.topPages
+          .map((row) => `<tr><td>${row.path}</td><td>${row.views}</td></tr>`)
+          .join("");
+
+        document.getElementById("recent-visits").innerHTML = dashboard.recentVisits
+          .map(
+            (row) =>
+              `<tr><td>${formatTime(row.created_at)}</td><td>${row.path || "—"}</td><td>${row.referrer || "—"}</td></tr>`
+          )
+          .join("");
+
+        document.getElementById("recent-errors").innerHTML = dashboard.recentErrors.length
+          ? dashboard.recentErrors
+              .map(
+                (row) =>
+                  `<tr><td>${formatTime(row.created_at)}</td><td>${row.path || "—"}</td><td>${row.message || "—"}</td></tr>`
+              )
+              .join("")
+          : `<tr><td colspan="3">No errors recorded</td></tr>`;
+      }
+
+      async function checkSession() {
+        try {
+          const session = await api("/api/v1/auth/me");
+          if (session.authenticated) {
+            showDashboard();
+            await loadDashboard();
+            return;
+          }
+        } catch {
+          // not signed in
+        }
+        showLogin();
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginError.classList.add("hidden");
+
+        try {
+          await api("/api/v1/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ password: document.getElementById("password").value }),
+          });
+          showDashboard();
+          await loadDashboard();
+        } catch (error) {
+          loginError.textContent = error.message;
+          loginError.classList.remove("hidden");
+        }
+      });
+
+      logoutBtn.addEventListener("click", async () => {
+        await api("/api/v1/auth/logout", { method: "POST" });
+        showLogin();
+      });
+
+      resumeForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const status = document.getElementById("resume-status");
+        const error = document.getElementById("resume-error");
+        status.classList.add("hidden");
+        error.classList.add("hidden");
+
+        const fileInput = document.getElementById("resume-file");
+        const formData = new FormData();
+        formData.append("resume", fileInput.files[0]);
+
+        try {
+          const result = await api("/api/v1/admin/resume", {
+            method: "POST",
+            body: formData,
+          });
+          status.textContent = `Uploaded successfully (${result.sizeBytes} bytes)`;
+          status.classList.remove("hidden");
+          await loadDashboard();
+        } catch (err) {
+          error.textContent = err.message;
+          error.classList.remove("hidden");
+        }
+      });
+
+      checkSession();
+    </script>
+  </body>
+</html>
