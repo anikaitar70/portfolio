@@ -18,6 +18,16 @@ WEB_ROOT="/var/www/anikait.page"
 echo "==> Building static site..."
 cd "$APP_DIR"
 npm ci
+
+# Embed telemetry key in static build when backend is configured on the VPS.
+if [[ -f /etc/portfolio-api.env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source /etc/portfolio-api.env
+  set +a
+  export NEXT_PUBLIC_TELEMETRY_KEY="${INGEST_KEY:-}"
+fi
+
 NODE_ENV=production npm run build
 
 echo "==> Publishing to $WEB_ROOT..."
