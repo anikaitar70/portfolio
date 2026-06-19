@@ -4,7 +4,7 @@ export const siteConfig = {
   title: "Software Engineer · AI Builder · Automation Engineer",
   description:
     "I build software, AI systems, automation workflows, and IoT solutions that turn complex ideas into reliable products.",
-  url: "https://anikait.dev",
+  url: "https://anikait.page",
   ogImage: "/og-image.png",
   email: "anikaitar@gmail.com",
   github: "https://github.com/anikaitar70",
