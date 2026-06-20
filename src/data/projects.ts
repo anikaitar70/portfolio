@@ -57,6 +57,7 @@ export const projects: Project[] = [
       "Real-time Dashboard",
     ],
     github: "https://github.com/anikaitar70/industrial_equipment_health_monitor",
+    demo: "https://ehm.anikait.page/",
   },
   {
     id: "credrank-net",
@@ -85,7 +86,7 @@ export const projects: Project[] = [
       "Real-time Layer",
     ],
     github: "https://github.com/anikaitar70/finalproject",
-    demo: "https://credrank.net",
+    demo: "https://crn.anikait.page/",
   },
   {
     id: "ai-debug-assistant",
