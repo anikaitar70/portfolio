@@ -23,11 +23,9 @@ cd "$APP_DIR"
 npm ci
 
 # Embed telemetry key in static build when backend is configured on the VPS.
+# Read INGEST_KEY directly — do not source the env file (bcrypt hashes contain $2).
 if [[ -f /etc/portfolio-api.env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source /etc/portfolio-api.env
-  set +a
+  INGEST_KEY="$(grep -E '^INGEST_KEY=' /etc/portfolio-api.env | cut -d= -f2- | tr -d '\r' || true)"
   export NEXT_PUBLIC_TELEMETRY_KEY="${INGEST_KEY:-}"
 fi
 
