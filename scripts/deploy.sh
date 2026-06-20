@@ -11,6 +11,9 @@ set -euo pipefail
 # Usage:
 #   chmod +x scripts/deploy.sh
 #   ./scripts/deploy.sh
+#
+# Or from the VPS (pull + deploy):
+#   sudo -i && update-portfolio
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WEB_ROOT="/var/www/anikait.page"

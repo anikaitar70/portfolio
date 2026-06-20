@@ -55,6 +55,11 @@ systemctl enable "$SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"
 systemctl --no-pager status "$SERVICE_NAME"
 
+chmod +x "$REPO_DIR/scripts/deploy.sh" "$REPO_DIR/scripts/update-vps.sh"
+ln -sf "$REPO_DIR/scripts/update-vps.sh" /usr/local/bin/update-portfolio
+
 echo ""
 echo "Backend running. Admin panel: https://anikait.page/admin/"
 echo "Remember to proxy /api and /admin in nginx and set ADMIN_PASSWORD_HASH."
+echo ""
+echo "To update the site after pushing to git: sudo -i && update-portfolio"
