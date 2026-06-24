@@ -3,7 +3,8 @@ export type ProjectCategory =
   | "automation"
   | "iot"
   | "fullstack"
-  | "data";
+  | "data"
+  | "devtools";
 
 export interface Project {
   id: string;
@@ -26,6 +27,7 @@ export const projectCategories: { id: ProjectCategory | "all"; label: string }[]
   { id: "iot", label: "IoT" },
   { id: "fullstack", label: "Full Stack" },
   { id: "data", label: "Data" },
+  { id: "devtools", label: "Dev Tools" },
 ];
 
 export const projects: Project[] = [
@@ -117,7 +119,40 @@ export const projects: Project[] = [
     ],
     github: "https://github.com/anikaitar70/aidebug",
     demo: "https://ai.anikait.page",
-
+  },
+  {
+    id: "repolens",
+    title: "RepoLens",
+    category: "devtools",
+    featured: true,
+    problem:
+      "Code reviews miss structural issues — large files, security smells, dead code, circular imports, and duplicate logic — until they become expensive refactors or production incidents.",
+    solution:
+      "Built a full-stack repository audit platform with deterministic analyzers (Tree-sitter AST, semantic duplicate detection, architecture intelligence) and optional BYOK AI reports. Supports ZIP upload, client-side folder packaging, and Git URL analysis with production deployment on Docker and Nginx.",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "FastAPI",
+      "Python",
+      "Tree-sitter",
+      "Sentence Transformers",
+      "Docker",
+      "Nginx",
+      "Tailwind CSS",
+      "Groq",
+    ],
+    impact:
+      "Surfaces structural and security risks before merge, giving teams actionable audit reports without waiting for manual deep dives.",
+    architecture: [
+      "Source Ingest (ZIP / Git / Folder)",
+      "Tree-sitter AST Pipeline",
+      "Deterministic Analyzers",
+      "Semantic Duplicate Detection",
+      "Architecture Intelligence",
+      "BYOK AI Report Layer",
+      "Next.js Dashboard",
+    ],
+    demo: "https://rl.anikait.page",
   },
   {
     id: "nirvana-yoga-cms",
