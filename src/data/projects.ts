@@ -152,6 +152,7 @@ export const projects: Project[] = [
       "BYOK AI Report Layer",
       "Next.js Dashboard",
     ],
+    github: "https://github.com/anikaitar70/repolens",
     demo: "https://rl.anikait.page",
   },
   {
